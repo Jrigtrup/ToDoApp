@@ -1,9 +1,17 @@
+let mylists = new List();
 
+function List(){
+    this.collection = [];
+    this.add = function(laugh){
+        this.collection.push(new List(laugh));
+    };
+}
 
 let taskInput = document.getElementById("new-task"); //new-task
 let addButton = document.getElementsByTagName("button")[0]; //first button
 let incompleteTasksHolder = document.getElementById("incomplete-tasks"); //incomplete-tasks
 let completedTasksHolder= document.getElementById("completed-tasks"); //completed-tasks
+
 
 //New Task List Item
 function createNewTaskElement(taskString) {
@@ -53,6 +61,23 @@ function addTask() {
   
   taskInput.value = "";
 }
+
+
+(function(){
+    if(localStorage.alldata){
+        let mydata = JSON.parse(localStorage.alldata);
+
+        for(let l = 0; l < mydata.length; l++){
+
+            mylists.add(mydata[l].name);
+
+            for(let i = 0; i < mydata[l].collection.length; i++){
+                mylists.collection[l].add(mydata[l].collection[i].name, mydata[l].collection[i].damage);
+            }
+        }
+        pagePrint(mylists.collection);
+    }
+})();
 
 //Edit an existing task
 function editTask() {
@@ -140,8 +165,31 @@ for(let i = 0; i < completedTasksHolder.children.length; i++) {
   bindTaskEvents(completedTasksHolder.children[i], taskIncomplete);
 }
 
+function getMyData(){
+    $('.list').html('');
+    let objectdata = JSON.parse(localStorage.alldata);
+    console.log(objectdata);
+    pagePrint(objectdata);
+}
+function pagePrint(listItem){
+    for(let l = 0; l < listItem.length; l++){
 
-// OnKeyUp
+        let listitems = "";
+
+        for(let i = 0; i < listItem[l].collection.length; i++){
+            listitems += '<div>'+ listItem[l].collection[i].name +'</div>';
+        }
+
+        $('.list').append("<div><span>"+ listItem[l].name + "</span>" +
+            "<input onkeyup='addItem(this, this.value, event, "+ l +")' type='text' placeholder='Add Item...' class='iteminput'>"+
+            "<div class='itemsbox'>"+ listitems + "</div>" +
+            "</div>");
+    }
+}
+
 // Nested Lists
 // LocalStorage
-// not create blank lists
+// (optional) OnKeyUp
+// (optional) not create blank lists
+// **something from bootstrap
+// **animate the delete function
